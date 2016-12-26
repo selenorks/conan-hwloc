@@ -12,7 +12,6 @@ install:
 - rm -rf cmake-3.0.2-Linux-64
 - rm cmake-3.0.2-Linux-64.tar.gz
 # Download conan
-- sudo pip update
 - sudo pip install conan
 # Adjust config and settings
 - conan --version
