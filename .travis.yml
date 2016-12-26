@@ -12,7 +12,7 @@ install:
 - rm -rf cmake-3.0.2-Linux-64
 - rm cmake-3.0.2-Linux-64.tar.gz
 # Download conan
-- pip install conan
+- sudo pip install conan
 # Adjust config and settings
 #- conan user lasote
 - echo -e "\ncompiler=gcc" >> ~/.conan/conan.conf
