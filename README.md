@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/lasote/conan-hwloc.svg)](https://travis-ci.org/lasote/conan-hwloc)
+[![Build Status](https://travis-ci.org/selenorks/conan-hwloc.svg)](https://travis-ci.org/selenorks/conan-hwloc)
 
 
 # conan-hwloc
