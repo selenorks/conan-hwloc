@@ -33,7 +33,10 @@ class HWLOCConan(ConanFile):
     def source(self):
         zip_name = "hwloc.tar.gz"
         major = ".".join(self.version.split(".")[0:2])
-        tools.download("http://www.open-mpi.org/software/hwloc/v%s/downloads/hwloc-%s.tar.gz" % (major, self.version), zip_name)
+        import urllib
+        urllib.urlretrieve ("http://www.open-mpi.org/software/hwloc/v%s/downloads/hwloc-%s.tar.gz" % (major, self.version), zip_name)
+
+        #tools.download("http://www.open-mpi.org/software/hwloc/v%s/downloads/hwloc-%s.tar.gz" % (major, self.version), zip_name)
         unzip(zip_name)
         os.unlink(zip_name)
 
