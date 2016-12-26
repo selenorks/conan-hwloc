@@ -9,8 +9,13 @@ class HWLOCConan(ConanFile):
     version = "1.11.5"
     ZIP_FOLDER_NAME = "hwloc-%s" % version
     settings = "os", "arch", "compiler", "build_type"
-    options = {"shared": [True, False]}
-    default_options = "shared=False"
+    options = {
+        "shared": [True, False],
+        "libudev": [True, False],
+        "pci": [True, False],
+        "libnuma": [True, False],
+        }
+    default_options = "shared=False","libudev=False", "pci=False", "libnuma=False"
     exports = ["CMakeLists.txt", "FindHwloc.cmake"]
     url="http://github.com/selenorks/conan-hwloc"
     
@@ -46,6 +51,9 @@ class HWLOCConan(ConanFile):
         """
         if self.settings.os == "Linux" or self.settings.os == "Macos":
             shared_options = "--enable-shared" if self.options.shared else "--enable-static"
+            numa_options = "--enable-libnuma" if self.options.libnuma else "--disable-libnuma"
+            udev_options = "--enable-libudev" if self.options.libudev else "--disable-libudev"
+            pci_options = "--enable-libpci" if self.options.pci else "--disable-libpci"
             arch = "-m32 " if self.settings.arch == "x86" else ""
             
             if self.settings.os == "Macos":
@@ -53,7 +61,7 @@ class HWLOCConan(ConanFile):
                 new_str = 'install_name \$soname'
                 replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
             
-            self.run("cd %s && CFLAGS='%s -mstackrealign -fPIC -O3' ./configure %s" % (self.ZIP_FOLDER_NAME, arch, shared_options))
+            self.run("cd %s && CFLAGS='%s -mstackrealign -fPIC -O3' ./configure %s %s %s %s" % (self.ZIP_FOLDER_NAME, arch, shared_options, numa_options, udev_options, pci_options))
             self.run("cd %s && make" % self.ZIP_FOLDER_NAME)
         elif self.settings.os == "Windows":
             runtimes = {"MD": "MultiThreadedDLL",
@@ -104,7 +112,7 @@ class HWLOCConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == "Linux":
-            self.cpp_info.libs = ["hwloc", "udev", "xml2"]
+            self.cpp_info.libs = ["hwloc", "xml2"]#"udev"
         elif self.settings.os == "Macos":
             self.cpp_info.libs = ['hwloc']
         elif self.settings.os == "Windows":
