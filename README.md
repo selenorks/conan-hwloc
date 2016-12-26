@@ -15,20 +15,20 @@ Download conan client from [Conan.io](https://conan.io) and run:
 
 ## Upload packages to server
 
-    $ conan upload hwloc/1.11.1@lasote/stable --all
+    $ conan upload hwloc/1.11.5@selenorks/stable --all
     
 ## Reuse the packages
 
 ### Basic setup
 
-    $ conan install hwloc/1.11.1@lasote/stable
+    $ conan install hwloc/1.11.5@selenorks/stable
     
 ### Project setup
 
 If you handle multiple dependencies in your project is better to add a *conanfile.txt*
     
     [requires]
-    hwloc/1.11.1@lasote/stable
+    hwloc/1.11.1@selenorks/stable
 
     [options]
     zlib:shared=true # false

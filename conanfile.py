@@ -1,4 +1,4 @@
-from conans import ConanFile
+from conans import ConanFile, tools
 import os
 from conans.tools import download, unzip, replace_in_file
 from conans import CMake
@@ -33,7 +33,7 @@ class HWLOCConan(ConanFile):
     def source(self):
         zip_name = "hwloc.tar.gz"
         major = ".".join(self.version.split(".")[0:2])
-        download("http://www.open-mpi.org/software/hwloc/v%s/downloads/hwloc-%s.tar.gz" % (major, self.version), zip_name)
+        tools.download("http://www.open-mpi.org/software/hwloc/v%s/downloads/hwloc-%s.tar.gz" % (major, self.version), zip_name)
         unzip(zip_name)
         os.unlink(zip_name)
 
