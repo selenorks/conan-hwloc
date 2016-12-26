@@ -6,13 +6,13 @@ from conans import CMake
 
 class HWLOCConan(ConanFile):
     name = "hwloc"
-    version = "1.11.1"
+    version = "1.11.5"
     ZIP_FOLDER_NAME = "hwloc-%s" % version
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False]}
     default_options = "shared=False"
     exports = ["CMakeLists.txt", "FindHwloc.cmake"]
-    url="http://github.com/lasote/conan-hwloc"
+    url="http://github.com/selenorks/conan-hwloc"
     
     def system_requirements(self):
         self.global_system_requirements=True
