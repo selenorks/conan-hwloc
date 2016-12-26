@@ -2,6 +2,7 @@ PROJECT(MyHello)
 cmake_minimum_required(VERSION 3.0)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+
 CONAN_BASIC_SETUP()
 
 find_package(Hwloc)
@@ -10,6 +11,9 @@ IF(HWLOC_FOUND)
     include_directories(${HWLOC_INCLUDE_DIRS})
     ADD_EXECUTABLE(main main.c)
     TARGET_LINK_LIBRARIES(main ${HWLOC_LIBRARIES})
+    IF(UNIX)
+        TARGET_LINK_LIBRARIES(main numa pciaccess)
+    endif()
 ELSE()
     MESSAGE(FATAL_ERROR "HWLOC NOT FOUND!")
 ENDIF()

@@ -47,8 +47,8 @@ if __name__ == "__main__":
 
         # Static x86_64
         test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=False')
-        #test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=False')
+        test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=False')
 
         # Shared x86_64
-        #test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=True')
-        #test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=True')
+        test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=True')
+        test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=True')
