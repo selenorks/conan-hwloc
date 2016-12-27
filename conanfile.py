@@ -61,7 +61,7 @@ class HWLOCConan(ConanFile):
                 new_str = 'install_name \$soname'
                 replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
             
-            self.run("cd %s && CFLAGS='%s -mstackrealign -fPIC -O3' ./configure %s %s %s %s" % (self.ZIP_FOLDER_NAME, arch, shared_options, numa_options, udev_options, pci_options))
+            self.run("cd %s && CFLAGS='%s -mstackrealign -fPIC -O3' ./configure %s %s %s %s --disable-libxml2" % (self.ZIP_FOLDER_NAME, arch, shared_options, numa_options, udev_options, pci_options))
             self.run("cd %s && make" % self.ZIP_FOLDER_NAME)
         elif self.settings.os == "Windows":
             runtimes = {"MD": "MultiThreadedDLL",
