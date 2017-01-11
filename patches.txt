@@ -1,0 +1,49 @@
+IOS:
+#############################################################
+
+
+./configure --target=arm-linux-gnueabi --build=x86_64-apple-darwin
+
+
+PREFIX="${HOME}/DEVICE_ARM64"
+
+export SDK=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.1.sdk
+export SDK="iphoneos"
+export ARCH_FLAGS="-arch arm64"
+export ARCH_FLAGS="-arch armv7"
+export HOST_FLAGS="${ARCH_FLAGS} -miphoneos-version-min=8.0 -isysroot $(xcrun -sdk ${SDK} --show-sdk-path)"
+export CHOST="arm-apple-darwin"
+export CC="$(xcrun -find -sdk ${SDK} clang)"
+export CXX="$(xcrun -find -sdk ${SDK} clang++)"
+export CPP="$(xcrun -find -sdk ${SDK} cpp)"
+
+export CFLAGS="${HOST_FLAGS} ${OPT_FLAGS}"
+export CXXFLAGS="${HOST_FLAGS} ${OPT_FLAGS}"
+export LDFLAGS="${HOST_FLAGS}"
+
+./configure --host=${CHOST} --prefix=${PREFIX} --enable-static --disable-shared
+
+
+
+ADNROID:
+########################################################################################
+
+
+export ANDROID_NDK=~/android-ndk-r10d/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64
+
+export CXXFLAGS="-DNDEBUG -g2 -O2 -march=armv7-a -mthumb -mfpu=vfpv3-d16 -mfloat-abi=softfp -Wl,--fix-cortex-a8 -funwind-tables -fexceptions -frtti -I/opt/android-ndk/sources/cxx-stl/gnu-libstdc++/4.9/include"
+export LDLIBS="/opt/android-ndk/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/libgnustl_shared.so"
+export SYSROOT: /opt/android-ndk/platforms/android-21/arch-arm
+export PREFIX="${HOME}/android64"
+
+export CC="/home/efimochkin/android-ndk-armv7/bin/arm-linux-androideabi-gcc"
+export CXX="/home/efimochkin/android-ndk-armv7/bin/arm-linux-androideabi-g++"
+
+./configure --host=x86_64-linux --build=x86_64-pc-linux-gnu --prefix=${PREFIX}  --target=arm-linux-androideabi --program-prefix= \
+--enable-static \
+--disable-shared \
+--with-sysroot=/home/efimochkin/android-ndk-armv7 \
+--disable-pci --disable-libxml2 
+
+./make-standalone-toolchain.sh --toolchain=arm-linux-androideabi-4.9 --ndk-dir=/home/efimochkin/android-ndk-r10d --install-dir=/home/efimochkin/android-ndk-armv7 --system=linux-x86_64
+

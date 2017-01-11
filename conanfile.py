@@ -2,6 +2,7 @@ from conans import ConanFile, tools
 import os
 from conans.tools import download, unzip, replace_in_file
 from conans import CMake
+from subprocess import check_output
 
 
 class HWLOCConan(ConanFile):
@@ -49,20 +50,45 @@ class HWLOCConan(ConanFile):
         """ Define your project building. You decide the way of building it
             to reuse it later in any other project.
         """
-        if self.settings.os == "Linux" or self.settings.os == "Macos":
+        if self.settings.os == "Linux" or self.settings.os == "Macos" or self.settings.os == "iOS":
             shared_options = "--enable-shared" if self.options.shared else "--enable-static"
             numa_options = "--enable-libnuma" if self.options.libnuma else "--disable-libnuma"
             udev_options = "--enable-libudev" if self.options.libudev else "--disable-libudev"
             pci_options = "--enable-libpci" if self.options.pci else "--disable-libpci"
             arch = "-m32 " if self.settings.arch == "x86" else ""
-            
+
             if self.settings.os == "Macos":
                 old_str = 'install_name \$rpath/\$soname'
                 new_str = 'install_name \$soname'
                 replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
-            
-            self.run("cd %s && CFLAGS='%s -mstackrealign -fPIC -O3' ./configure %s %s %s %s --disable-libxml2" % (self.ZIP_FOLDER_NAME, arch, shared_options, numa_options, udev_options, pci_options))
-            self.run("cd %s && make" % self.ZIP_FOLDER_NAME)
+
+            opt = ""
+            if self.settings.os == "iOS":
+                 opt = "--host=arm-apple-darwin"
+                 sdk = "iphoneos"
+                 arch = self.settings.arch if self.settings.arch != "armv8" else "arm64"
+                 host_flags = "-arch %s -miphoneos-version-min=8.0 -isysroot $(xcrun -sdk %s --show-sdk-path)" % (arch, sdk)
+                 exports = [ "HOST_FLAGS=\"%s\"" % host_flags,
+                     "CHOST=\"arm-apple-darwin\"",
+                     "CC=\"$(xcrun -find -sdk %s clang)\"" % (sdk),
+                     "CXX=\"$(xcrun -find -sdk %s clang++)\"" % (sdk),
+                     "CPP=\"$(xcrun -find -sdk %s cpp)\"" % (sdk),
+                     "LDFLAGS=\"%s\"" % host_flags,
+                     "CXXFLAGS=\"%s\"" % host_flags,
+                     "CFLAGS=\"%s\"" % host_flags
+                     ]
+
+                 self.run("cd %s && %s ./configure %s %s %s %s %s --disable-libxml2" % (self.ZIP_FOLDER_NAME, " ".join(exports), shared_options, numa_options, udev_options, pci_options, opt))
+                 print("conf done")
+                 self.run("cd %s && %s make" % (self.ZIP_FOLDER_NAME, " ".join(exports)))
+#                sdk = "iphoneos"
+
+#                arch_flags = "-arch arm64"
+#                host_flags = "{} -miphoneos-version-min=8.0 -isysroot $(xcrun -sdk ${SDK} --show-sdk-path)".format(arch_flags, check_output(["xcrun","-sdk", sdk, "--show-sdk-path"]).strip()))
+#
+            else:
+                 self.run("cd %s && CFLAGS='%s -mstackrealign -fPIC -O3' ./configure %s %s %s %s --disable-libxml2" % (self.ZIP_FOLDER_NAME, arch, shared_options, numa_options, udev_options, pci_options))
+                 self.run("cd %s && make" % self.ZIP_FOLDER_NAME)
         elif self.settings.os == "Windows":
             runtimes = {"MD": "MultiThreadedDLL",
                         "MDd": "MultiThreadedDebugDLL",
@@ -72,7 +98,7 @@ class HWLOCConan(ConanFile):
             file_path = "%s/contrib/windows/libhwloc.vcxproj" % self.ZIP_FOLDER_NAME
             # Adjust runtime in project solution
             replace_in_file(file_path, "MultiThreadedDLL", runtime)
-            
+
             platform, configuration = self.visual_platform_and_config()
             msbuild = 'Msbuild.exe hwloc.sln /m /t:libhwloc /p:Configuration=%s;Platform="%s"' % (configuration, platform)
             self.output.info(msbuild)
