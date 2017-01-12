@@ -66,7 +66,7 @@ class HWLOCConan(ConanFile):
             if self.settings.os == "iOS":
                  opt = "--host=arm-apple-darwin"
                  sdk = "iphoneos"
-                 arch = self.settings.arch
+                 arch = self.settings.arch if self.settings.arch != "armv8" else "arm64"
                  host_flags = "-arch %s -miphoneos-version-min=8.0 -isysroot $(xcrun -sdk %s --show-sdk-path)" % (arch, sdk)
                  exports = [ "HOST_FLAGS=\"%s\"" % host_flags,
                      "CHOST=\"arm-apple-darwin\"",
