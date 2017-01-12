@@ -14,11 +14,17 @@ if __name__ == "__main__":
     
     def build(settings):
         argv =  " ".join(sys.argv[1:])
+        command = "conan source"
+        retcode = os.system(command)
+        if retcode != 0:
+            exit("Error while executing:\n\t %s" % command)
+        
         command = "conan install %s %s" % (settings, argv)
         retcode = os.system(command)
         if retcode != 0:
             exit("Error while executing:\n\t %s" % command)
-        retcode = os.system("conan build")
+        command = "conan build"
+        retcode = os.system(command)
         if retcode != 0:
             exit("Error while executing:\n\t %s" % command)
         
