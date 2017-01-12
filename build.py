@@ -36,20 +36,20 @@ if __name__ == "__main__":
             test(compiler + '-s arch=x86_64 -s build_type=Release -s compiler.runtime=MD -o hwloc:shared=True')
 
     else:  # Compiler and version not specified, please set it in your home/.conan/conan.conf (Valid for Macos and Linux)
-#        if not os.getenv("TRAVIS", False):  
+        if not os.getenv("TRAVIS", False):  
             # Static x86
-#            test('-s arch=x86 -s build_type=Debug -o hwloc:shared=False')
-#            test('-s arch=x86 -s build_type=Release -o hwloc:shared=False')
+            test('-s arch=x86 -s build_type=Debug -o hwloc:shared=False')
+            test('-s arch=x86 -s build_type=Release -o hwloc:shared=False')
     
             # Shared x86
-#            test('-s arch=x86 -s build_type=Debug -o hwloc:shared=True')
-#            test('-s arch=x86 -s build_type=Release -o hwloc:shared=True')
+            test('-s arch=x86 -s build_type=Debug -o hwloc:shared=True')
+            test('-s arch=x86 -s build_type=Release -o hwloc:shared=True')
 
         # Static x86_64
-#        test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=False')
-#        test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=False')
+        test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=False')
+        test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=False')
 
         # Shared x86_64
-#        test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=True')
-#        test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=True')
-        test('-s arch=armv7 -s os=iOS -s build_type=Release -o hwloc:shared=True')
+        test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=True')
+        test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=True')
+#        test('-s arch=armv7 -s os=iOS -s build_type=Release -o hwloc:shared=True')

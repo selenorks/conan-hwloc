@@ -87,7 +87,7 @@ class HWLOCConan(ConanFile):
 #                host_flags = "{} -miphoneos-version-min=8.0 -isysroot $(xcrun -sdk ${SDK} --show-sdk-path)".format(arch_flags, check_output(["xcrun","-sdk", sdk, "--show-sdk-path"]).strip()))
 #
             else:
-                 self.run("cd %s && CFLAGS='%s -mstackrealign -fPIC -O3' ./configure %s %s %s %s %s --disable-libxml2" % (self.ZIP_FOLDER_NAME, arch, shared_options, numa_options, udev_options, pci_options, opt))
+                 self.run("cd %s && CFLAGS='%s -mstackrealign -fPIC -O3' ./configure %s %s %s %s --disable-libxml2" % (self.ZIP_FOLDER_NAME, arch, shared_options, numa_options, udev_options, pci_options))
                  self.run("cd %s && make" % self.ZIP_FOLDER_NAME)
         elif self.settings.os == "Windows":
             runtimes = {"MD": "MultiThreadedDLL",
