@@ -72,3 +72,4 @@ if __name__ == "__main__":
         test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=True')
         if platform.system() == "Darwin":
             build('-s arch=armv7 -s os=iOS -s build_type=Release -o hwloc:shared=True')
+            build('-s arch=arm64 -s os=iOS -s build_type=Release -o hwloc:shared=True')
