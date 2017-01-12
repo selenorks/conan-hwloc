@@ -11,6 +11,18 @@ if __name__ == "__main__":
         retcode = os.system(command)
         if retcode != 0:
             exit("Error while executing:\n\t %s" % command)
+    
+    def build(settings):
+        argv =  " ".join(sys.argv[1:])
+        command = "conan install %s %s" % (settings, argv)
+        retcode = os.system(command)
+        if retcode != 0:
+            exit("Error while executing:\n\t %s" % command)
+        retcode = os.system("conan build")
+        if retcode != 0:
+            exit("Error while executing:\n\t %s" % command)
+        
+
 
 
     if platform.system() == "Windows":
@@ -52,4 +64,5 @@ if __name__ == "__main__":
         # Shared x86_64
         test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=True')
         test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=True')
-#        test('-s arch=armv7 -s os=iOS -s build_type=Release -o hwloc:shared=True')
+        if platform.system() == "Darwin":
+            build('-s arch=armv7 -s os=iOS -s build_type=Release -o hwloc:shared=True')
