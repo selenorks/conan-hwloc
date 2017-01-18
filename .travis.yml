@@ -28,7 +28,7 @@ addons:
 matrix:
     include:
         - os: linux
-          dist: trusty
+          dist: precise
           env: CONAN_GCC_VERSIONS=4.6 CONAN_USE_DOCKER=1
           services:
             - docker
