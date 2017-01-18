@@ -20,6 +20,8 @@ matrix:
         - dist: trusty
           env: CONAN_GCC_VERSIONS=4.6 CONAN_USE_DOCKER=1
         - os: osx
+          osx_image: xcode6.4 # apple-clang 6.1
+          language: generic
           env: COMPILER=clang++
          
 install:
