@@ -16,8 +16,6 @@ if [[ "$(uname -s)" == 'Darwin' ]]; then
     pyenv virtualenv 2.7.10 conan
     pyenv rehash
     pyenv activate conan
-else
-    sudo apt-get install libxml2-dev libxml2-dev:i386
 fi
 
 pip install conan_package_tools # It install conan too

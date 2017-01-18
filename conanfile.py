@@ -129,7 +129,7 @@ class HWLOCConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == "Linux":
-            self.cpp_info.libs = ["hwloc", "xml2"]#"udev"
+            self.cpp_info.libs = ["hwloc"]#"udev"
         elif self.settings.os == "Macos":
             self.cpp_info.libs = ['hwloc']
         elif self.settings.os == "Windows":
