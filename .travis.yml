@@ -5,7 +5,7 @@ os: linux
 dist: precise
 
 sudo: required
-language: python
+language: cpp
 
 env:
   global:
