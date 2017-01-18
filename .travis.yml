@@ -1,6 +1,7 @@
 notifications:
   email: false
 
+os: linux
 services:
    - docker
 
