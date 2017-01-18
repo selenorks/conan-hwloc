@@ -10,8 +10,26 @@ env:
     - CONAN_TOTAL_PAGES=1
     - CONAN_CURRENT_PAGE=1
 
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    #- gcc-4.8
+    #- g++-4.8
+    #- clang
+    - libxml2-dev
+
 matrix:
     include:
+        - os: linux
+          dist: trusty
+          env: CONAN_GCC_VERSIONS=4.6 CONAN_USE_DOCKER=1
+          services:
+            - docker
+          sudo: required
+          language: cpp
+
         - os: osx
           osx_image: xcode6.4 # apple-clang 6.1
           language: generic
