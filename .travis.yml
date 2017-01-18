@@ -19,6 +19,9 @@ addons:
     #- g++-4.8
     #- clang
     - libxml2-dev
+    - libxml2-dev:i386
+    - libudev0 libudev0:i386
+    - libudev1 libudev1:i386
 
 matrix:
     include:
