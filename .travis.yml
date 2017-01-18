@@ -12,7 +12,8 @@ env:
 
 matrix:
     include:
-        - dist: trusty
+        - os: linux
+          dist: trusty
           env: CONAN_GCC_VERSIONS=4.6 CONAN_USE_DOCKER=1
           services:
             - docker
