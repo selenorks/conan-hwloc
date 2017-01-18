@@ -1,9 +1,6 @@
 notifications:
   email: false
 
-os: linux
-dist: precise
-
 sudo: required
 language: cpp
 
@@ -21,7 +18,7 @@ env:
 
 matrix:
     include:
-        - os: linux
+        - dist: trusty
         - os: osx
           env: COMPILER=clang++
          
