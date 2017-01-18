@@ -14,14 +14,14 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
-    packages:
+    #packages:
     #- gcc-4.8
     #- g++-4.8
     #- clang
-    - libxml2-dev
-    - libxml2-dev:i386
-    - libudev0
-    - libudev0:i386
+    #- libxml2-dev
+    #- libxml2-dev:i386
+    #- libudev0
+    #- libudev0:i386
 
 matrix:
     include:
