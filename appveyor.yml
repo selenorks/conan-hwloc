@@ -1,0 +1,25 @@
+build: false
+environment:
+    PYTHON: "C:\\Python27-x64"
+    PYTHON_VERSION: "2.7.11"
+    PYTHON_ARCH: "64"
+
+    CONAN_UPLOAD: 1
+    CONAN_REFERENCE: "jemalloc/4.3.1"
+    CONAN_USERNAME: "selenorks"
+    CONAN_CHANNEL: "testing"
+    CONAN_TOTAL_PAGES: 4
+
+    matrix:
+        - CONAN_CURRENT_PAGE: 1
+        - CONAN_CURRENT_PAGE: 2  
+        - CONAN_CURRENT_PAGE: 3
+        - CONAN_CURRENT_PAGE: 4
+install:
+  - set PATH=%PATH%;%PYTHON%/Scripts/
+  - C:\Python27-x64\python -m pip install conan_package_tools # It install conan too
+  - conan user # It creates the conan data directory
+
+test_script:
+  - set PATH=%PATH%;%PYTHON%/Scripts/
+  - C:\Python27-x64\python build.py

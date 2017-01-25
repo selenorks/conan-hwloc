@@ -1,75 +1,22 @@
-import os
+from conan.packager import ConanMultiPackager
 import platform
-import sys
 
 if __name__ == "__main__":
-    os.system('conan export selenorks/stable')
-   
-    def test(settings):
-        argv =  " ".join(sys.argv[1:])
-        command = "conan test %s %s" % (settings, argv)
-        retcode = os.system(command)
-        if retcode != 0:
-            exit("Error while executing:\n\t %s" % command)
-    
-    def build(settings):
-        argv =  " ".join(sys.argv[1:])
-        command = "conan source"
-        retcode = os.system(command)
-        if retcode != 0:
-            exit("Error while executing:\n\t %s" % command)
-        
-        command = "conan install %s %s" % (settings, argv)
-        retcode = os.system(command)
-        if retcode != 0:
-            exit("Error while executing:\n\t %s" % command)
-        command = "conan build"
-        retcode = os.system(command)
-        if retcode != 0:
-            exit("Error while executing:\n\t %s" % command)
-        
-
-
-
+    builder = ConanMultiPackager()
     if platform.system() == "Windows":
-        print("It will fail first time because of adjustement of visual project. Open 'sln' project in hwloc\1.11.5\selenorks\stable\source\hwloc-1.11.1\contrib/windows, update the solution and add x86 as configuration available ")
-        input("Press Enter to continue...")
-        
-        for compiler_version in ("12",):
-            compiler = '-s compiler="Visual Studio" -s compiler.version=%s ' % compiler_version
-            # Static x86
-            #test(compiler + '-s arch=x86 -s build_type=Debug -s compiler.runtime=MDd -o hwloc:shared=False')
-            #test(compiler + '-s arch=x86 -s build_type=Release -s compiler.runtime=MD -o hwloc:shared=False')
-    
-            # Static x86_64
-            test(compiler + '-s arch=x86_64 -s build_type=Debug -s compiler.runtime=MDd -o hwloc:shared=False')
-            test(compiler + '-s arch=x86_64 -s build_type=Release -s compiler.runtime=MD -o hwloc:shared=False')
-    
-            # Shared x86
-            #test(compiler + '-s arch=x86 -s build_type=Debug -s compiler.runtime=MDd -o hwloc:shared=True')
-            #test(compiler + '-s arch=x86 -s build_type=Release -s compiler.runtime=MD -o hwloc:shared=True')
-    
-            # Shared x86_64
-            test(compiler + '-s arch=x86_64 -s build_type=Debug -s compiler.runtime=MDd -o hwloc:shared=True')
-            test(compiler + '-s arch=x86_64 -s build_type=Release -s compiler.runtime=MD -o hwloc:shared=True')
+        builder.add_common_builds()
+        filtered_builds = []
+        for settings, options in builder.builds:
+            if settings["compiler"] == "Visual Studio" and settings["compiler.version"] == "14" and settings["compiler.runtime"].startswith("MD"):
+                 filtered_builds.append([settings, options])
+        builder.builds = filtered_builds
 
-    else:  # Compiler and version not specified, please set it in your home/.conan/conan.conf (Valid for Macos and Linux)
-        if not os.getenv("TRAVIS", False):  
-            # Static x86
-            test('-s arch=x86 -s build_type=Debug -o hwloc:shared=False')
-            test('-s arch=x86 -s build_type=Release -o hwloc:shared=False')
-    
-            # Shared x86
-            test('-s arch=x86 -s build_type=Debug -o hwloc:shared=True')
-            test('-s arch=x86 -s build_type=Release -o hwloc:shared=True')
+    if platform.system() == "Linux":
+        builder.add_common_builds()
+        filtered_builds = []
+        for settings, options in builder.builds:
+            if settings["compiler"] == "gcc":
+                 filtered_builds.append([settings, options])
+        builder.builds = filtered_builds
 
-        # Static x86_64
-        test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=False')
-        test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=False')
-
-        # Shared x86_64
-        test('-s arch=x86_64 -s build_type=Debug -o hwloc:shared=True')
-        test('-s arch=x86_64 -s build_type=Release -o hwloc:shared=True')
-        if platform.system() == "Darwin":
-            build('-s arch=armv7 -s os=iOS -s build_type=Release -o hwloc:shared=True')
-            build('-s arch=armv8 -s os=iOS -s build_type=Release -o hwloc:shared=True')
+    builder.run()

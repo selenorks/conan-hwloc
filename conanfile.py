@@ -20,14 +20,14 @@ class HWLOCConan(ConanFile):
     exports = ["CMakeLists.txt", "FindHwloc.cmake"]
     url="http://github.com/selenorks/conan-hwloc"
     
-    def system_requirements(self):
-        self.global_system_requirements=True
-        if self.settings.os == "Linux":
-            self.output.warn("'libudev' library is required in your computer. Enter sudo password if required...")
-            self.run("sudo apt-get install libudev0 libudev0:i386 || true ")
-            self.run("sudo apt-get install libudev1 libudev1:i386 || true ")
-            self.run("sudo apt-get install libudev-dev libudev-dev:i386 || true ")
-            self.run("sudo apt-get install libxml2-dev libxml2-dev:i386 || true ")
+    #def system_requirements(self):
+    #    self.global_system_requirements=True
+    #    if self.settings.os == "Linux":
+    #        self.output.warn("'libudev' library is required in your computer. Enter sudo password if required...")
+    #        self.run("sudo apt-get install libudev0 libudev0:i386 || true ")
+    #        self.run("sudo apt-get install libudev1 libudev1:i386 || true ")
+    #        self.run("sudo apt-get install libudev-dev libudev-dev:i386 || true ")
+    #        self.run("sudo apt-get install libxml2-dev libxml2-dev:i386 || true ")
 
     #def conan_info(self):
     #    # We don't want to change the package for each compiler version but
@@ -140,7 +140,7 @@ class HWLOCConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == "Linux":
-            self.cpp_info.libs = ["hwloc", "xml2"]#"udev"
+            self.cpp_info.libs = ["hwloc"] #, "xml2"]#"udev"
         elif self.settings.os == "Macos":
             self.cpp_info.libs = ['hwloc']
         elif self.settings.os == "Windows":

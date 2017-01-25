@@ -1,18 +1,24 @@
-notifications:
-  email: false
+env:
+  global:
+    - CONAN_UPLOAD=1
+    - CONAN_REFERENCE="jemalloc/4.3.1"
+    - CONAN_USERNAME="selenorks"
+    - CONAN_CHANNEL="testing"
+    - CONAN_TOTAL_PAGES=1
+    - CONAN_CURRENT_PAGE=1
 
-sudo: required
-python: 3.4
-language: cpp
 matrix:
     include:
         - os: linux
-          dist: precise
-        - os: osx
-          env: COMPILER=clang++
-         
-install:
-- bash -x install.sh
+          dist: trusty
+          env: CONAN_GCC_VERSIONS=4.8 CONAN_USE_DOCKER=1
+          services:
+            - docker
+          sudo: required
+          language: cpp
 
+install:
+  - ./.travis/install.sh
 script:
-- python build.py
+  - ./.travis/run.sh
+
