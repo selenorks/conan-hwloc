@@ -3,7 +3,7 @@ import os
 from conans.tools import download, unzip, replace_in_file
 from conans import CMake
 from subprocess import check_output
-
+import platform
 
 class HWLOCConan(ConanFile):
     name = "hwloc"
@@ -29,22 +29,23 @@ class HWLOCConan(ConanFile):
             self.run("sudo apt-get install libudev-dev libudev-dev:i386 || true ")
             self.run("sudo apt-get install libxml2-dev libxml2-dev:i386 || true ")
 
-    def conan_info(self):
-        # We don't want to change the package for each compiler version but
-        # we need the setting to compile with cmake
-        # self.info.settings.compiler.version = "any"
-        if self.settings.os == "Windows":
-            self.info.settings.build_type = "Release"
+    #def conan_info(self):
+    #    # We don't want to change the package for each compiler version but
+    #    # we need the setting to compile with cmake
+    #    # self.info.settings.compiler.version = "any"
+    #    if self.settings.os == "Windows":
+    #        self.info.settings.build_type = "Release"
 
     def source(self):
-        zip_name = "hwloc.tar.gz"
-        major = ".".join(self.version.split(".")[0:2])
-        import urllib
-        urllib.urlretrieve ("http://www.open-mpi.org/software/hwloc/v%s/downloads/hwloc-%s.tar.gz" % (major, self.version), zip_name)
-
-        #tools.download("http://www.open-mpi.org/software/hwloc/v%s/downloads/hwloc-%s.tar.gz" % (major, self.version), zip_name)
-        unzip(zip_name)
-        os.unlink(zip_name)
+        if self.settings.os == "Windows":
+            self.run("git clone https://github.com/selenorks/hwloc.git %s -b  hwloc-1.11.5_vs2015  --depth 1" % self.ZIP_FOLDER_NAME)
+        else:
+            zip_name = "hwloc.tar.gz"
+            major = ".".join(self.version.split(".")[0:2])
+            import urllib
+            urllib.urlretrieve ("http://www.open-mpi.org/software/hwloc/v%s/downloads/hwloc-%s.tar.gz" % (major, self.version), zip_name)
+            unzip(zip_name)
+            os.unlink(zip_name)
 
     def build(self):
         """ Define your project building. You decide the way of building it
@@ -106,7 +107,8 @@ class HWLOCConan(ConanFile):
 
     def visual_platform_and_config(self):
         platform = "Win32" if self.settings.arch == "x86" else "x64"
-        configuration = "Release" if self.options.shared else "ReleaseStatic" 
+        build_type = str(self.info.settings.build_type)
+        configuration = build_type if self.options.shared else (build_type + "Static")
         return platform, configuration
     
     def package(self):
