@@ -8,7 +8,7 @@ class DefaultNameConan(ConanFile):
     version = "0.1"
     settings = "os", "compiler", "arch", "build_type"
     generators = "cmake"
-    requires = "hwloc/1.11.5@selenorks/stable"
+    requires = "hwloc/1.11.5@selenorks/testing"
 
     def build(self):
         cmake = CMake(self.settings)

@@ -101,12 +101,13 @@ class HWLOCConan(ConanFile):
             replace_in_file(file_path, "MultiThreadedDLL", runtime)
 
             platform, configuration = self.visual_platform_and_config()
+            print platform
             msbuild = 'Msbuild.exe hwloc.sln /m /t:libhwloc /p:Configuration=%s;Platform="%s"' % (configuration, platform)
             self.output.info(msbuild)
             self.run("cd %s/contrib/windows/ &&  %s" % (self.ZIP_FOLDER_NAME, msbuild))
 
     def visual_platform_and_config(self):
-        platform = "Win32" if self.settings.arch == "x86" else "x64"
+        platform = 'x64' if self.settings.arch == 'x86_64' else 'win32'
         build_type = str(self.info.settings.build_type)
         configuration = build_type if self.options.shared else (build_type + "Static")
         return platform, configuration
@@ -140,11 +141,11 @@ class HWLOCConan(ConanFile):
 
     def package_info(self):
         if self.settings.os == "Linux":
-            self.cpp_info.libs = ["hwloc"] #, "xml2"]#"udev"
+            self.cpp_info.libs = ["hwloc"]
         elif self.settings.os == "Macos":
             self.cpp_info.libs = ['hwloc']
         elif self.settings.os == "Windows":
             if self.options.shared: 
-                self.cpp_info.libs = ["libhwloc"]
+                self.cpp_info.libs = ["libhwloc"]#, "libhwloc-5"]
             else:
-                self.cpp_info.libs = ["libhwloc-5"]
+                self.cpp_info.libs = ["libhwloc"]
