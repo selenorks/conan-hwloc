@@ -24,5 +24,10 @@ if __name__ == "__main__":
         builder.add({"arch": "x86_64", "build_type": "Release"})
         builder.add({"arch": "x86", "build_type": "Debug"})
         builder.add({"arch": "x86_64", "build_type": "Debug"})
-
+        #iOS
+        builder.add({"arch": "armv7", "os": "iOS", "build_type": "Release"})
+        builder.add({"arch": "armv8", "os": "iOS", "build_type": "Release"})
+        builder.add({"arch": "armv7", "os": "iOS", "build_type": "Debug"})
+        builder.add({"arch": "armv8", "os": "iOS", "build_type": "Debug"})
+        
     builder.run()

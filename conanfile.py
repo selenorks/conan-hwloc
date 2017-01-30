@@ -71,15 +71,16 @@ class HWLOCConan(ConanFile):
                  opt = "--host=arm-apple-darwin"
                  sdk = "iphoneos"
                  arch = self.settings.arch if self.settings.arch != "armv8" else "arm64"
-                 host_flags = "-arch %s -miphoneos-version-min=8.0 -isysroot $(xcrun -sdk %s --show-sdk-path)" % (arch, sdk)
+                 host_flags = "-arch %s -miphoneos-version-min=5.0 -isysroot $(xcrun -sdk %s --show-sdk-path)" % (arch, sdk)
+                 flags = " -O3 -g " if str(self.info.settings.build_type) == "Release" else "-O0 -g "
                  exports = [ "HOST_FLAGS=\"%s\"" % host_flags,
                      "CHOST=\"arm-apple-darwin\"",
                      "CC=\"$(xcrun -find -sdk %s clang)\"" % (sdk),
                      "CXX=\"$(xcrun -find -sdk %s clang++)\"" % (sdk),
                      "CPP=\"$(xcrun -find -sdk %s cpp)\"" % (sdk),
                      "LDFLAGS=\"%s\"" % host_flags,
-                     "CXXFLAGS=\"%s\"" % host_flags,
-                     "CFLAGS=\"%s\"" % host_flags
+                     "CXXFLAGS=\"%s %s\"" % (host_flags, flags),
+                     "CFLAGS=\"%s %s\"" % (host_flags, flags)
                      ]
 
                  self.run("cd %s && %s ./configure %s %s %s %s %s --disable-libxml2" % (self.ZIP_FOLDER_NAME, " ".join(exports), shared_options, numa_options, udev_options, pci_options, opt))
@@ -149,6 +150,6 @@ class HWLOCConan(ConanFile):
             self.cpp_info.libs = ['hwloc']
         elif self.settings.os == "Windows":
             if self.options.shared: 
-                self.cpp_info.libs = ["libhwloc"]#, "libhwloc-5"]
+                self.cpp_info.libs = ["libhwloc"]
             else:
                 self.cpp_info.libs = ["libhwloc"]
