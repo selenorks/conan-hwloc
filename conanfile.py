@@ -17,7 +17,7 @@ class HWLOCConan(ConanFile):
         "libnuma": [True, False],
         }
     default_options = "shared=False","libudev=False", "pci=False", "libnuma=False"
-    exports = ["CMakeLists.txt", "FindHwloc.cmake"]
+    exports = ["CMakeLists.txt", "FindHwloc.cmake", "android.patch", "android_build.sh"]
     url="http://github.com/selenorks/conan-hwloc"
     
     #def system_requirements(self):
@@ -51,49 +51,54 @@ class HWLOCConan(ConanFile):
         """ Define your project building. You decide the way of building it
             to reuse it later in any other project.
         """
-        if self.settings.os == "Linux" or self.settings.os == "Macos" or self.settings.os == "iOS":
-            shared_options = "--enable-shared" if self.options.shared else "--enable-static"
-            numa_options = "--enable-libnuma" if self.options.libnuma else "--disable-libnuma"
-            udev_options = "--enable-libudev" if self.options.libudev else "--disable-libudev"
-            pci_options = "--enable-libpci" if self.options.pci else "--disable-libpci"
-            flags = "-m32 " if self.settings.arch == "x86" else ""
-            flags += " -mmacosx-version-min=10.7 " if self.settings.os == "Macos" else ""
+        if self.settings.os == "Linux" or self.settings.os == "Macos" or self.settings.os == "iOS" or self.settings.os == "Android":
+            opts = "--disable-libxml2 "
+            opts += "--enable-shared " if self.options.shared else "--enable-static "
+            opts += "--enable-libnuma " if self.options.libnuma else "--disable-libnuma "
+            opts += "--enable-libudev " if self.options.libudev else "--disable-libudev "
+            opts += "--enable-libpci " if self.options.pci else "--disable-libpci "
+            flags = ""
+            if self.settings.os == "Macos" or self.settings.os == "Linux":
+                flags = "-m32 " if self.settings.arch == "x86" else ""
             flags += " -fPIC "
             flags += " -O3 -g " if str(self.info.settings.build_type) == "Release" else "-O0 -g "
-            str(self.info.settings.build_type)
+
             if self.settings.os == "Macos":
+                flags += " -mmacosx-version-min=10.7 "
                 old_str = 'install_name \$rpath/\$soname'
                 new_str = 'install_name \$soname'
                 replace_in_file("./%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
 
             opt = ""
             if self.settings.os == "iOS":
-                 opt = "--host=arm-apple-darwin"
+                 opts = "--host=arm-apple-darwin "
                  sdk = "iphoneos"
                  arch = self.settings.arch if self.settings.arch != "armv8" else "arm64"
-                 host_flags = "-arch %s -miphoneos-version-min=5.0 -isysroot $(xcrun -sdk %s --show-sdk-path)" % (arch, sdk)
+                 platform_define =  "__arm__" if self.settings.arch != "armv8" else  "__arm64__"
+                 host_flags = "-arch %s -miphoneos-version-min=5.0 -isysroot $(xcrun -sdk %s --show-sdk-path) -I$(xcrun -sdk %s --show-sdk-path)/usr/include/ -D%s" % (arch, sdk, sdk, platform_define)
                  flags = " -O3 -g " if str(self.info.settings.build_type) == "Release" else "-O0 -g "
                  exports = [ "HOST_FLAGS=\"%s\"" % host_flags,
                      "CHOST=\"arm-apple-darwin\"",
                      "CC=\"$(xcrun -find -sdk %s clang)\"" % (sdk),
                      "CXX=\"$(xcrun -find -sdk %s clang++)\"" % (sdk),
-                     "CPP=\"$(xcrun -find -sdk %s cpp)\"" % (sdk),
                      "LDFLAGS=\"%s\"" % host_flags,
-                     "CXXFLAGS=\"%s %s\"" % (host_flags, flags),
+                     "CPPFLAGS=\"%s %s\"" % (host_flags, flags),
                      "CFLAGS=\"%s %s\"" % (host_flags, flags)
                      ]
 
-                 self.run("cd %s && %s ./configure %s %s %s %s %s --disable-libxml2" % (self.ZIP_FOLDER_NAME, " ".join(exports), shared_options, numa_options, udev_options, pci_options, opt))
-                 print("conf done")
+                 self.run("cd %s && %s ./configure %s %s" % (self.ZIP_FOLDER_NAME, " ".join(exports), opts))
                  self.run("cd %s && %s make" % (self.ZIP_FOLDER_NAME, " ".join(exports)))
-#                sdk = "iphoneos"
-
-#                arch_flags = "-arch arm64"
-#                host_flags = "{} -miphoneos-version-min=8.0 -isysroot $(xcrun -sdk ${SDK} --show-sdk-path)".format(arch_flags, check_output(["xcrun","-sdk", sdk, "--show-sdk-path"]).strip()))
-#
+            elif self.settings.os == "Android":
+                root = os.path.dirname(os.path.abspath(__file__))
+                patch = os.path.join(root, "android.patch")
+                self.run("cd %s && patch -s -p0 < %s" % (self.ZIP_FOLDER_NAME, patch))
+                build = os.path.join(root, "android_build.sh")
+                self.run('cd %s && OPTS="%s" OPT_FLAGS="%s" ARCH="%s" %s' % (self.ZIP_FOLDER_NAME, opts, flags, self.settings.arch, build))
+                self.run("cd %s && make" % self.ZIP_FOLDER_NAME)
             else:
-                 self.run("cd %s && CFLAGS='%s -mstackrealign' ./configure %s %s %s %s --disable-libxml2" % (self.ZIP_FOLDER_NAME, flags, shared_options, numa_options, udev_options, pci_options))
-                 self.run("cd %s && make" % self.ZIP_FOLDER_NAME)
+                self.run("cd %s && CFLAGS='%s -mstackrealign' ./configure %s" % (self.ZIP_FOLDER_NAME, flags, opts))
+                self.run("cd %s && make" % self.ZIP_FOLDER_NAME)
+
         elif self.settings.os == "Windows":
             runtimes = {"MD": "MultiThreadedDLL",
                         "MDd": "MultiThreadedDebugDLL",
@@ -140,6 +145,7 @@ class HWLOCConan(ConanFile):
                 else:
                     self.copy(pattern="*.so", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
                     self.copy(pattern="*.so.*", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+                    self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
             else:
                 self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
 

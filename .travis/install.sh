@@ -3,6 +3,14 @@
 set -e
 set -x
 
+if [ $ANDROID == 1 ]; then
+    sudo apt-get install p7zip-full
+    wget http://dl.google.com/android/ndk/android-ndk-r10c-linux-x86_64.bin -O $PWD/ndk.bin 
+    7z x $PWD/ndk.bin > 7z.log
+    export ANDROID_NDK=`pwd`/android-ndk-r10c
+    rm $PWD/ndk.bin
+fi
+
 if [[ "$(uname -s)" == 'Darwin' ]]; then
     brew update || brew update
     brew outdated pyenv || brew upgrade pyenv
