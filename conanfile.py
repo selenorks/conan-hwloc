@@ -18,23 +18,9 @@ class HWLOCConan(ConanFile):
         }
     default_options = "shared=False","libudev=False", "pci=False", "libnuma=False"
     exports = ["CMakeLists.txt", "FindHwloc.cmake", "android.patch", "android_build.sh"]
+    description = "The Hardware Locality (hwloc) software project aims at easing the process of discovering hardware resources in parallel architectures."
+    license="https://www.open-mpi.org/projects/hwloc/license.php"
     url="http://github.com/selenorks/conan-hwloc"
-    
-    #def system_requirements(self):
-    #    self.global_system_requirements=True
-    #    if self.settings.os == "Linux":
-    #        self.output.warn("'libudev' library is required in your computer. Enter sudo password if required...")
-    #        self.run("sudo apt-get install libudev0 libudev0:i386 || true ")
-    #        self.run("sudo apt-get install libudev1 libudev1:i386 || true ")
-    #        self.run("sudo apt-get install libudev-dev libudev-dev:i386 || true ")
-    #        self.run("sudo apt-get install libxml2-dev libxml2-dev:i386 || true ")
-
-    #def conan_info(self):
-    #    # We don't want to change the package for each compiler version but
-    #    # we need the setting to compile with cmake
-    #    # self.info.settings.compiler.version = "any"
-    #    if self.settings.os == "Windows":
-    #        self.info.settings.build_type = "Release"
 
     def source(self):
         if self.settings.os == "Windows":
@@ -86,7 +72,7 @@ class HWLOCConan(ConanFile):
                      "CFLAGS=\"%s %s\"" % (host_flags, flags)
                      ]
 
-                 self.run("cd %s && %s ./configure %s %s" % (self.ZIP_FOLDER_NAME, " ".join(exports), opts))
+                 self.run("cd %s && %s ./configure %s" % (self.ZIP_FOLDER_NAME, " ".join(exports), opts))
                  self.run("cd %s && %s make" % (self.ZIP_FOLDER_NAME, " ".join(exports)))
             elif self.settings.os == "Android":
                 root = os.path.dirname(os.path.abspath(__file__))
@@ -110,7 +96,6 @@ class HWLOCConan(ConanFile):
             replace_in_file(file_path, "MultiThreadedDLL", runtime)
 
             platform, configuration = self.visual_platform_and_config()
-            print platform
             msbuild = 'Msbuild.exe hwloc.sln /m /t:libhwloc /p:Configuration=%s;Platform="%s"' % (configuration, platform)
             self.output.info(msbuild)
             self.run("cd %s/contrib/windows/ &&  %s" % (self.ZIP_FOLDER_NAME, msbuild))
@@ -139,15 +124,12 @@ class HWLOCConan(ConanFile):
             self.copy(pattern="*.lib", dst="lib", src=src, keep_path=False)
 
         else:
-            if self.options.shared:
-                if self.settings.os == "Macos":
-                    self.copy(pattern="*.dylib", dst="lib", keep_path=False)
-                else:
-                    self.copy(pattern="*.so", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
-                    self.copy(pattern="*.so.*", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
-                    self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+            if self.settings.os == "Macos" or self.settings.os == "iOS":
+                self.copy(pattern="*.dylib", dst="lib", keep_path=False)
             else:
-                self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+                self.copy(pattern="*.so", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+                self.copy(pattern="*.so.*", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+            self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
 
     def package_info(self):
         if self.settings.os == "Linux":
