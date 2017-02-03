@@ -1,5 +1,5 @@
 echo ANDROID_NDK=$ANDROID_NDK
-if ["${ARCH}" != "armv7"]; then
+if [ "${ARCH}" != "armv7" ]; then
 #armv8
     export PLATFORM=android-21
     export PATH=$ANDROID_NDK/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/aarch64-linux-android/bin:$PATH
@@ -8,10 +8,10 @@ if ["${ARCH}" != "armv7"]; then
     -isystem ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/include \
     -isystem ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/libs/arch-arm64/include \
     -isystem ${ANDROID_NDK}/sources/cxx-stl/gnu-libstdc++/4.9/include/backward \
-    -Wno-psabi --sysroot=${ANDROID_NDK}/platforms/${PLATFORM}/arch-arm64 -funwind-tables -fsigned-char -no-canonical-prefixes -fdata-sections -ffunction-sections -Wa,--noexecstack  -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 -O3 -DNDEBUG -fPIC"
+    -Wno-psabi --sysroot=${ANDROID_NDK}/platforms/${PLATFORM}/arch-arm64 -funwind-tables -fsigned-char -no-canonical-prefixes -fdata-sections -ffunction-sections -Wa,--noexecstack  -fomit-frame-pointer -fstrict-aliasing -funswitch-loops -finline-limit=300 -fPIE -pie -fPIC"
     export CXXFLAGS="$CFLAGS"
     export CPPFLAGS="$CFLAGS"
-    export LDFLAGS="-fPIC -L${ANDROID_NDK}/platforms/${PLATFORM}/arch-arm64/usr/lib --sysroot=${ANDROID_NDK}/platforms/${PLATFORM}/arch-arm64"
+    export LDFLAGS="-fPIE -pie -L${ANDROID_NDK}/platforms/${PLATFORM}/arch-arm64/usr/lib --sysroot=${ANDROID_NDK}/platforms/${PLATFORM}/arch-arm64"
     export CC="$ANDROID_NDK/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin/aarch64-linux-android-gcc"
     export CXX="$ANDROID_NDK/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin/aarch64-linux-android-g++"
     
