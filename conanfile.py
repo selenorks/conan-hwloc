@@ -57,7 +57,7 @@ class HWLOCConan(ConanFile):
 
             opt = ""
             if self.settings.os == "iOS":
-                 opts = "--host=arm-apple-darwin "
+                 opts += "--host=arm-apple-darwin "
                  sdk = "iphoneos"
                  arch = self.settings.arch if self.settings.arch != "armv8" else "arm64"
                  platform_define =  "__arm__" if self.settings.arch != "armv8" else  "__arm64__"
