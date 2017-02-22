@@ -42,7 +42,7 @@ class HWLOCConan(ConanFile):
             opts += "--enable-shared " if self.options.shared else "--enable-static "
             opts += "--enable-libnuma " if self.options.libnuma else "--disable-libnuma "
             opts += "--enable-libudev " if self.options.libudev else "--disable-libudev "
-            opts += "--enable-libpci " if self.options.pci else "--disable-libpci "
+            opts += "--enable-pci " if self.options.pci else "--disable-pci "
             flags = ""
             if self.settings.os == "Macos" or self.settings.os == "Linux":
                 flags = "-m32 " if self.settings.arch == "x86" else ""
